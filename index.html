@@ -130,7 +130,7 @@
         #content.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
         h1 {
-            font-size: 8vw;
+            font-size: 5vw;
             margin: 0;
             color: #ffd700;
             text-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
@@ -363,8 +363,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.05)'; // Very light trail for transparency
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas completely
             particles.forEach((p, i) => {
                 if (p.alpha > 0) { p.update(); p.draw(); }
                 else { particles.splice(i, 1); }
