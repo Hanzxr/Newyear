@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026: Paradise Reveal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            /* Starry Night Blue Gradient */
+            background: linear-gradient(to bottom, #020111 0%, #191621 30%, #20202c 100%);
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Swirling Nebula Effect */
+        .nebula {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(40, 60, 150, 0.2), transparent 40%),
+                radial-gradient(circle at 70% 80%, rgba(80, 20, 120, 0.2), transparent 40%);
+            z-index: -1;
+            filter: blur(50px);
+            animation: drift 20s infinite alternate;
+        }
+
+        @keyframes drift {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+
+        /* High Density Stars Background */
+        #stars-container {
+            position: fixed;
+            top: 0; left: 0; width: 110%; height: 110%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: twinkle var(--duration) infinite;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* YouTube Player Hidden */
+        #youtube-player {
+            position: absolute;
+            width: 390px; height: 390px;
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Firecracker Overlay */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 1.5s ease;
+        }
+
+        #firecracker {
+            width: 55px; height: 140px;
+            background: #d32f2f;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: inset -10px 0 10px rgba(0,0,0,0.5), 0 0 30px rgba(211, 47, 47, 0.6);
+        }
+
+        #fuse {
+            position: absolute;
+            top: -30px; left: 50%;
+            width: 3px; height: 30px;
+            background: #5d4037;
+            transform: translateX(-50%);
+        }
+
+        #spark {
+            position: absolute;
+            top: -10px; left: 50%;
+            width: 14px; height: 14px;
+            background: #ffd700;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            display: none;
+            box-shadow: 0 0 20px #ff4500, 0 0 40px #ffd700;
+        }
+
+        .ignited #spark {
+            display: block;
+            animation: burn 1.2s forwards linear;
+        }
+
+        @keyframes burn {
+            0% { top: -35px; }
+            100% { top: 0px; opacity: 0; }
+        }
+
+        /* Main Reveal Content */
+        #content {
+            position: fixed;
+            top: 25%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            text-align: center;
+            opacity: 0;
+            z-index: 50;
+            pointer-events: none;
+            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #content.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        h1 {
+            font-size: 8vw;
+            margin: 0;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* Envelope Styles */
+        #envelope-wrapper {
+            position: fixed;
+            bottom: 12%; left: 50%;
+            transform: translateX(-50%) scale(0);
+            z-index: 51;
+            transition: all 0.8s ease;
+        }
+
+        #envelope-wrapper.show { transform: translateX(-50%) scale(1); }
+
+        .envelope {
+            width: 170px; height: 115px;
+            background: #8b0000;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+        }
+
+        .envelope:before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            border-left: 85px solid transparent;
+            border-right: 85px solid transparent;
+            border-top: 70px solid #b22222;
+            transition: transform 0.6s;
+            transform-origin: top;
+            z-index: 4;
+        }
+
+        .envelope.open:before { transform: rotateX(180deg); z-index: 1; }
+
+        .letter {
+            position: absolute;
+            bottom: 5px; left: 10px;
+            width: 150px; height: 95px;
+            background: #fffdf5;
+            color: #222;
+            font-family: 'Playfair Display', serif;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: all 0.7s ease-in-out;
+            z-index: 2;
+            text-align: center;
+            filter: blur(15px); /* Initially Unreadable */
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .envelope.open .letter {
+            transform: translateY(-110px);
+            height: 250px; width: 320px;
+            left: -75px; font-size: 18px;
+            z-index: 5;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            filter: blur(0); /* Readable when clicked */
+            opacity: 1;
+        }
+
+        canvas { display: block; position: fixed; top: 0; left: 0; z-index: 5; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div class="nebula"></div>
+    <div id="stars-container"></div>
+    <div id="youtube-player"></div> <div id="overlay">
+        <div id="firecracker" onclick="ignite()">
+            <div id="fuse"><div id="spark"></div></div>
+        </div>
+        <p style="color:#ffd700; margin-top:25px; font-size: 13px; letter-spacing: 5px; font-family: 'Playfair Display', serif;">IGNITE PARADISE</p>
+    </div>
+
+    <div id="content">
+        <h1>Happy New Year</h1>
+        <h1 style="font-size: 12vw;">2026</h1>
+    </div>
+
+    <div id="envelope-wrapper">
+        <div class="envelope" id="envelope" onclick="openLetter()">
+            <div class="letter">
+                <p>May 2026 be your most atmospheric year yet. Let the stars align and the music take you to paradise. ✨</p>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // --- 1. YouTube Player API Setup ---
+        var player;
+        
+        window.onYouTubeIframeAPIReady = function() {
+            player = new YT.Player('youtube-player', {
+                height: '390',
+                width: '390',
+                videoId: 'E_zXy3ZOMTM', // "Paradise" by Chase Atlantic
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onError': onPlayerError
+                }
+            });
+        };
+
+        function onPlayerReady(event) {
+            // Player is ready, but we wait for click to play
+        }
+
+        function onPlayerError(event) {
+            console.error('YouTube player error:', event.data);
+        }
+
+        // Load YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // --- 2. Starry Sky Logic ---
+        const starsContainer = document.getElementById('stars-container');
+        function createStars() {
+            for (let i = 0; i < 350; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+
+        // --- 3. Fireworks Canvas Logic ---
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        let isCelebrating = false;
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.velocity = { x: (Math.random() - 0.5) * 15, y: (Math.random() - 0.5) * 15 };
+                this.alpha = 1;
+                this.friction = 0.95;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                this.velocity.x *= this.friction;
+                this.velocity.y *= this.friction;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.007;
+            }
+        }
+
+        function createFirework(x, y) {
+            const color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+            for (let i = 0; i < 120; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        // --- 4. Interactive Reveal Logic ---
+        function ignite() {
+            const fc = document.getElementById('firecracker');
+            fc.classList.add('ignited');
+            
+            setTimeout(() => {
+                document.getElementById('overlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('overlay').remove(), 1500);
+                
+                document.getElementById('content').classList.add('show');
+                document.getElementById('envelope-wrapper').classList.add('show');
+                
+                // Play YouTube Audio
+                if (player && typeof player.playVideo === 'function') {
+                    try {
+                        player.playVideo();
+                    } catch (e) {
+                        console.error('Error playing YouTube video:', e);
+                    }
+                } else {
+                    console.warn('YouTube player not yet ready');
+                }
+                
+                isCelebrating = true;
+                startFinale(180);
+            }, 1200);
+        }
+
+        function startFinale(seconds) {
+            let endTime = Date.now() + (seconds * 1000);
+            function launch() {
+                if (Date.now() < endTime) {
+                    createFirework(Math.random() * canvas.width, Math.random() * (canvas.height * 0.7));
+                    setTimeout(launch, Math.random() * 500 + 400);
+                }
+            }
+            launch();
+        }
+
+        function openLetter() {
+            document.getElementById('envelope').classList.toggle('open');
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.fillStyle = 'rgba(10, 10, 20, 0.05)'; // Very light trail for transparency
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                if (p.alpha > 0) { p.update(); p.draw(); }
+                else { particles.splice(i, 1); }
+            });
+        }
+
+        // Parallax Stars
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX - window.innerWidth/2) / 40;
+            const y = (e.clientY - window.innerHeight/2) / 40;
+            starsContainer.style.transform = `translate(${-x}px, ${-y}px)`;
+            if(isCelebrating) {
+                document.getElementById('content').style.transform = `translate(-50%, -50%) rotateY(${x}deg) rotateX(${-y}deg)`;
+            }
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            if (isCelebrating) createFirework(e.clientX, e.clientY);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
